@@ -1,56 +1,26 @@
-import {useEffect,useState} from 'react';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Detail from "./routes/Detail";
+import Home from "./routes/Home";
+
 function App() {
-  const[loading, setLoading] = useState(true);
-  const[movies, setMovies] = useState([]);
-  
-  const getMovies = async() => {
-    const response = await fetch(
-      `https://yts.mx/api/v2/list_movies.json?minimum_rating=8.8&sort_by=year`
-    );
-    const json = await response.json();
-    setMovies(json.data.movies);
-    setLoading(false);
-  };
-  useEffect(() => {
-    getMovies();
-  }, []);
-
-  /*useEffect(() => {
-    fetch(`https://yts.mx/api/v2/list_movies.json?minimum_rating=8.8&sort_by=year`)
-    .then((response) => response.json())
-    .then((json) => {
-      setMovies(json.data.movies);
-      setLoading(false);
-    })
-  }, []);
-  then을 사용하는 대신 위에 쓰여진 async-await형태를 쓰는편이 낫다.
-  */
-
   return (
-    <div>
-      {loading ? (
-        <h1>Loading...</h1>
-      ) : (
-        <div>
-          {movies.map((movie) => (
-            <div key={movie.id}>
-              <img src={movie.medium_cover_image} />
-              <h2>{movie.title}</h2>
-              <p>{movie.summary}</p>
-              <ul>
-                {movie.genres.map((g) => (
-                  <li key={[Date.now()]}>{g}</li>
-                ))}
-                
-              </ul>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );//movie.genres를 map하는 이유는 genres가 [], array로 이루어져있다.
-  //map을 했기 때문에 key값도 당연히 부여해주어야 한다.그런데 genres는 별도의 id나 key가 없다
-  //그래서 원래는 key={g} 즉, 그 자체를 키로 설정했는데 장르가 겹치는 영화가 있을텐데 키값이 안겹친다고?..
-  //이럴때야말로 Date.now()를 쓰는게 낫지 않나. 써보니 잘 작동한다.
-};
+    <Router>
+    <Routes>
+    <Route path="/" element={<Home />} />
+    <Route path="/movie/:id" element={<Detail />} />
+    </Routes>
+    </Router>
+  );//
+}//<Routes>는 한번에 하나의 Route만 render해주는 기능
+//다시 말해 다른 것을 이용하면 한번에 두개이상도 render가능
+//새로운 버전이 나오면서 Switch가 Routes로 바뀌면서 몇가지 더 바뀐거같은데
+//니꼬의 강의에서 <Route path="/hello"><h1>hello</h1></Route>
+//로 url뒤에 /hello를 붙이면 hello라는 문구만 떠있는 route로 이동했는데
+//지금 저 코드 자체가 안 먹힌다.
+//특정 element나 그런 것들 없이 단순히 경로 지정하고 띄우는 것은 어떻게 하려나
+
+// /movie/:id 에서 :를 써주는 것이 useParams와 이어지는 키 포인트
+// " : " 뒷부분에 나오는 것들을 변수로 하여 사용할 수가 있게된다 즉, 동적 라우팅이 가능해진다.
+
+
 export default App;
